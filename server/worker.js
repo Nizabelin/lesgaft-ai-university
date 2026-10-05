@@ -52,7 +52,7 @@ export class AppState {
   }
   async release(id){await this.ctx.storage.transaction(async tx=>{const q=await tx.get('quota');if(q){delete q.leases[id];await tx.put('quota',q);}});}
   async runChat(request,cfg,profile,messages){
-    const key=await decrypt(profile.secret,this.env);const timeout=AbortSignal.timeout(110000);const signal=AbortSignal.any([request.signal,timeout]);
+    const key=await decrypt(profile.secret,this.env);const timeout=AbortSignal.timeout(45000);const signal=AbortSignal.any([request.signal,timeout]);
     const verdict=await complete(profile,key,[{role:'system',content:SCOPE_PROMPT},...messages.slice(-12)],Math.min(profile.maxTokens,1024),signal);
     if(verdict.trim()!=='ALLOW')return {answer:redirectText(messages.at(-1).content),redirected:true};
     const answer=await complete(profile,key,[{role:'system',content:SYSTEM_PROMPT},...messages],profile.maxTokens,signal);

@@ -20,7 +20,17 @@ export async function complete(profile,key,messages,maxTokens,signal,fetcher=fet
     body[profile.provider==='openai'?'max_completion_tokens':'max_tokens']=maxTokens;
     if(profile.provider==='deepseek')body.thinking={type:'disabled'};
   }
-  const response=await fetcher(provider.url,{method:'POST',headers,body:JSON.stringify(body),signal,redirect:'error'});
+  let response;
+  try{
+    // Some OpenAI-compatible gateways normalize the URL with a redirect.
+    // Follow it because the destination is a fixed, trusted provider URL.
+    response=await fetcher(provider.url,{method:'POST',headers,body:JSON.stringify(body),signal,redirect:'follow'});
+  }catch(error){
+    if(error?.name==='TimeoutError'||error?.name==='AbortError'){
+      throw new AppError(`Провайдер ${provider.name} не ответил вовремя. Попробуйте ещё раз или выберите другую модель.`,504);
+    }
+    throw new AppError(`Не удалось подключиться к провайдеру ${provider.name}. Проверьте его доступность и API-ключ.`,502);
+  }
   if(!response.ok){const messages={401:'Провайдер не принял API-ключ.',403:'Провайдер запретил доступ.',402:'Недостаточно средств на балансе провайдера.',404:'Модель не найдена.',429:'Превышен лимит провайдера.',400:'Провайдер отклонил параметры или модель.'};throw new AppError(messages[response.status]||'Провайдер ИИ временно недоступен.',502);}
   let data;try{data=await response.json();}catch{throw new AppError('Провайдер вернул некорректный ответ.',502);}
   const text=profile.provider==='anthropic'?data.content?.filter(b=>b.type==='text').map(b=>b.text).join('\n'):data.choices?.[0]?.message?.content;

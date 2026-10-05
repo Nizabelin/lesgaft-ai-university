@@ -1,0 +1,8 @@
+{
+  "name":"lesgaft-ai-university",
+  "version":"2.0.0",
+  "private":true,
+  "type":"module",
+  "scripts":{"deploy":"wrangler deploy --config server/wrangler.jsonc","test":"node --test test/*.test.js"},
+  "devDependencies":{"wrangler":"^4.0.0"}
+}

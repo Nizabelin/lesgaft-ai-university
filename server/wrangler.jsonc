@@ -1,0 +1,11 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "lesgaft-ai-api",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": true,
+  "keep_vars": true,
+  "durable_objects": {"bindings": [{"name":"APP_STATE","class_name":"AppState"}]},
+  "migrations": [{"tag":"v1","new_sqlite_classes":["AppState"]}],
+  "observability": {"enabled":false}
+}

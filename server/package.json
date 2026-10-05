@@ -1,0 +1,7 @@
+{
+  "name": "lesgaft-ai-api",
+  "private": true,
+  "type": "module",
+  "scripts": {"deploy": "wrangler deploy --config wrangler.jsonc"},
+  "devDependencies": {"wrangler": "^4.0.0"}
+}

@@ -9,6 +9,7 @@
 В панели предусмотрены:
 
 - DeepSeek;
+- Dahl Inference;
 - OpenAI;
 - Google Gemini через OpenAI-совместимый endpoint;
 - Anthropic / Claude;
@@ -22,6 +23,7 @@
 | Провайдер | Пример модели | Формат API |
 | --- | --- | --- |
 | DeepSeek | `deepseek-flash` | Chat Completions |
+| Dahl Inference | `MiniMaxAI/MiniMax-M2.7` или модель из `/v1/models` | OpenAI-compatible Chat Completions |
 | OpenAI | актуальная chat-модель из кабинета | Chat Completions |
 | Gemini | актуальная Gemini-модель, доступная в OpenAI compatibility | Chat Completions |
 | Anthropic | актуальная Claude-модель | Messages API |
@@ -29,6 +31,8 @@
 | OpenRouter | `provider/model-name` | OpenAI-compatible |
 
 Названия моделей со временем меняются. Вводите точное название, которое принимает конкретный сервис.
+
+Для Dahl в панели выберите `Dahl Inference`, вставьте ключ с выделенным токеном и укажите модель `MiniMaxAI/MiniMax-M2.7`. Актуальные модели можно посмотреть запросом `GET https://inference.dahl.global/v1/models` без API-ключа. Сам Dahl указывает, что его `/v1/chat/completions` совместим с форматом OpenAI и принимает `Authorization: Bearer <API_KEY>`. 
 
 ## Важно про GitHub Pages и API-ключи
 
@@ -53,8 +57,9 @@ Cloudflare Worker использует Durable Object с SQLite storage для �
 8. Создайте аккаунт Cloudflare и откройте **Workers & Pages → Create application → Worker**.
 9. Свяжите Worker с этим GitHub-репозиторием. В настройках сборки установите корневую папку `server`, команду установки `npm install`, команду деплоя `npx wrangler deploy --config wrangler.jsonc`.
 10. После первой публикации Cloudflare покажет адрес вида `https://lesgaft-ai-api.ВАШ-SUBDOMAIN.workers.dev`.
-11. Вставьте этот адрес без завершающего `/` в `docs/config.js` вместо `YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev` и сохраните файл в GitHub.
-12. Дождитесь обновления GitHub Pages и проверьте адрес сайта.
+11. В настройках Worker добавьте обычную переменную `ALLOWED_ORIGIN`. Для проектного сайта GitHub Pages укажите только origin без названия репозитория: например, `https://ВАШ-ЛОГИН.github.io`. Не добавляйте `/lesgaft-ai-university/` и не ставьте завершающий `/`. Для пользовательского домена укажите его origin, например `https://ai.example.ru`.
+12. Вставьте адрес Worker без завершающего `/` в `docs/config.js` вместо `YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev` и сохраните файл в GitHub.
+13. Дождитесь обновления GitHub Pages и проверьте адрес сайта.
 
 Если в вашей панели Cloudflare поле корневой папки называется **Root directory**, укажите `server`. Wrangler-конфигурация и `worker.js` находятся именно там. Workers Builds запускает команду сборки и деплоя при push в подключённый GitHub-репозиторий.
 
@@ -83,7 +88,7 @@ npx wrangler deploy --config wrangler.jsonc
 1. Откройте Worker → **Settings → Variables and Secrets**.
 2. Создайте Secret `ADMIN_TOKEN` и вставьте первую строку.
 3. Создайте Secret `ENCRYPTION_KEY` и вставьте вторую строку.
-4. Сохраните и задеплойте Worker.
+4. Сохраните секреты и задеплойте Worker ещё раз.
 5. Удалите эти строки из открытых заметок и сохраните их в менеджере паролей.
 
 Не меняйте `ENCRYPTION_KEY` после сохранения подключений: старые API-ключи перестанут расшифровываться. Если ключ шифрования потерян, сохранённые подключения придётся удалить и добавить заново.
@@ -150,6 +155,7 @@ npx wrangler deploy --config wrangler.jsonc
 - `docs/config.js` — единственная строка с публичным адресом Worker;
 - `server/worker.js` — API, CORS, авторизация, лимиты, Durable Object;
 - `server/providers.js` — адаптеры DeepSeek, OpenAI, Gemini, Claude, Groq и OpenRouter;
+- `server/providers.js` — адаптеры DeepSeek, Dahl Inference, OpenAI, Gemini, Claude, Groq и OpenRouter;
 - `server/prompts.js` — системная инструкция и тематический фильтр;
 - `server/wrangler.jsonc` — конфигурация Cloudflare Worker;
 - `test/server.test.js` — автоматические серверные проверки.

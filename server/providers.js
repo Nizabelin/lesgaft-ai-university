@@ -1,5 +1,6 @@
 export const PROVIDERS = {
   deepseek: {name:'DeepSeek',url:'https://api.deepseek.com/chat/completions',model:'deepseek-flash'},
+  dahl: {name:'Dahl Inference',url:'https://inference.dahl.global/v1/chat/completions',model:'MiniMaxAI/MiniMax-M2.7'},
   openai: {name:'OpenAI',url:'https://api.openai.com/v1/chat/completions',model:''},
   openrouter: {name:'OpenRouter',url:'https://openrouter.ai/api/v1/chat/completions',model:''},
   groq: {name:'Groq',url:'https://api.groq.com/openai/v1/chat/completions',model:''},
